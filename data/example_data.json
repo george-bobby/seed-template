@@ -1,0 +1,13 @@
+[
+  {
+    "name": "Example Entity 1",
+    "description": "This is an example entity for the template",
+    "createdDateTime": "01-15-24 10:30 AM"
+  },
+  {
+    "name": "Example Entity 2",
+    "description": "Another example entity",
+    "createdDateTime": "01-16-24 02:45 PM"
+  }
+]
+

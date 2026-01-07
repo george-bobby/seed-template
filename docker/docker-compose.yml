@@ -1,0 +1,53 @@
+# Docker Compose configuration for the application
+# Customize service names, ports, and volumes for your application
+
+services:
+  # Web server service (e.g., nginx, apache)
+  app_web:
+    container_name: app_web
+    image: prooph/nginx:www  # TODO: Replace with your web server image
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - app_data:/var/www/public:ro  # TODO: Adjust volume path for your app
+    depends_on:
+      - app_backend
+
+  # Backend service (e.g., PHP, Python, Node.js)
+  app_backend:
+    container_name: app_backend
+    build:
+      context: .
+      dockerfile: Dockerfile.php  # TODO: Replace with your backend Dockerfile
+    volumes:
+      - app_data:/var/www/public  # TODO: Adjust volume path for your app
+    depends_on:
+      app_db:
+        condition: service_healthy
+
+  # Database service
+  app_db:
+    container_name: app_db
+    image: mariadb  # TODO: Replace with your database image (mysql, postgres, etc.)
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=root  # TODO: Set secure passwords
+      - MYSQL_USER=dev
+      - MYSQL_PASSWORD=dev
+      - MYSQL_DATABASE=app_db  # TODO: Replace with your database name
+    volumes:
+      - app_db:/var/lib/mysql
+    healthcheck:
+      test: ['CMD', 'healthcheck.sh', '--connect', '--innodb_initialized']
+      start_period: 30s
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  app_data:
+    driver: local
+  app_db:
+    driver: local
