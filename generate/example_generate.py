@@ -3,6 +3,8 @@ Example data generation function.
 
 This file demonstrates the pattern for generating seed data using AI.
 Customize this for your application's data generation needs.
+
+For prompts with context from linked entities, see generate/prompts/
 """
 
 import random
@@ -17,9 +19,23 @@ from utils.api_utils import make_anthropic_request, parse_anthropic_response
 from utils.data_utils import load_existing_data, save_json_file
 from common.logger import logger
 
+# TODO: Import prompt functions from generate/prompts/ when you need context from linked entities
+# Example:
+# from generate.prompts.example_entity_prompt import create_entity_prompt_with_context
 
-def create_entities_prompt(used_names: set, batch_size: int) -> str:
-    """Create a prompt for generating entities."""
+
+def create_entities_prompt(used_names: set, batch_size: int, linked_entities: list[dict[str, Any]] | None = None) -> str:
+    """
+    Create a prompt for generating entities.
+    
+    For simple entities without relationships, use this function.
+    For entities that need context from linked entities, use functions from generate/prompts/
+    
+    Args:
+        used_names: Set of already used names to avoid duplicates
+        batch_size: Number of entities to generate
+        linked_entities: Optional list of related entities for context (not used in simple version)
+    """
     excluded_names_text = ""
     if used_names:
         recent_names = list(used_names)[-50:] if len(used_names) > 50 else list(used_names)
